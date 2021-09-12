@@ -6,9 +6,9 @@ from urllib.request import urlopen
 import psycopg2
 
 from app import cache
-from database.amazon_cred import ENDPOINT, PORT, USER, PASSWORD, DATABASE
-from database.data_constants import NOAA_CSVFILES_URL, GEOJSON_COUNTIES_URL
-from database.data_constants import STORM_CATEGORIES
+from notebooks.amazon_cred import ENDPOINT, PORT, USER, PASSWORD, DATABASE
+from notebooks.data_constants import NOAA_CSVFILES_URL, GEOJSON_COUNTIES_URL
+from notebooks.data_constants import STORM_CATEGORIES
 
 # Redis Constants
 CACHE_DATAFRAME = 0

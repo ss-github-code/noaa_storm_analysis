@@ -8,7 +8,7 @@ import dash_alternative_viz as dav
 import altair as alt
 
 from app_df import get_counties_json, get_storm_data, get_list_years, CACHE_FIGURE
-from database.data_constants import STORM_CATEGORIES
+from notebooks.data_constants import STORM_CATEGORIES
 from app import app, cache
 
 alt.data_transformers.disable_max_rows()
