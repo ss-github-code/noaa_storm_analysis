@@ -5,7 +5,7 @@ import json
 from urllib.request import urlopen
 import psycopg2
 
-from app import cache
+from app import cache, cache_found
 from notebooks.amazon_cred import ENDPOINT, PORT, USER, PASSWORD, DATABASE
 from notebooks.data_constants import NOAA_CSVFILES_URL, GEOJSON_COUNTIES_URL
 from notebooks.data_constants import STORM_CATEGORIES
@@ -14,7 +14,16 @@ from notebooks.data_constants import STORM_CATEGORIES
 CACHE_DATAFRAME = 0
 CACHE_FIGURE = 1
 
-@cache.memoize()
+# A decorator takes in a function and returns a new function from it.
+# So, if you want a conditional decorator, all you need is to return
+# the initial function when you do not want the decorator to be applied.
+def cache_memoize_conditional(fn):
+    if cache_found:
+        return cache.memoize()(fn)
+    else:
+        return fn
+
+@cache_memoize_conditional
 def download_counties_json(url):
     with urlopen(url) as response:
         counties_json = json.load(response)
@@ -23,7 +32,7 @@ def download_counties_json(url):
 def get_counties_json():
     return download_counties_json(GEOJSON_COUNTIES_URL)
 
-@cache.memoize()
+@cache_memoize_conditional
 def get_list_csvfiles(url):
     html = pd.read_html(url)
     df = html[0]
@@ -45,7 +54,7 @@ def get_list_years():
 # the dataframes for every year are cached in a globally available
 # Redis memory store which is available across processes
 # and for all time.
-@cache.memoize()
+@cache_memoize_conditional
 def get_storm_data(year, cache_id=CACHE_DATAFRAME):
     conn = psycopg2.connect(
         host=ENDPOINT,
