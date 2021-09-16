@@ -8,8 +8,7 @@ ZONE_COUNTY_CORR_CSV = 'https://raw.githubusercontent.com/ss-github-code/noaa_st
 NOAA_CSVFILES_URL = 'https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/'
 GEOJSON_COUNTIES_URL = 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
 
-
-TABLE_COLUMNS_NOAA = ['NAME', 'FIPS', 'STATE', 'EVENT_TYPE', 'EVENT_DATE', 'TOTAL_DAMAGE']
+TABLE_COLUMNS_NOAA = ['NAME', 'FIPS', 'STATE', 'EVENT_TYPE', 'EVENT_DATE', 'TOTAL_DAMAGE', 'TORNADO_STRENGTH', 'DURATION']
 
 STORM_CATEGORIES = {
     'Tropical Cyclones/Floods' : ['Hurricane', 'Storm Surge', 'Tropical Storm', 'Flood'],
