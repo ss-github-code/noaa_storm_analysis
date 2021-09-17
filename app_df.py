@@ -7,7 +7,7 @@ import psycopg2
 
 from app import cache, cache_found
 from notebooks.amazon_cred import ENDPOINT, PORT, USER, PASSWORD, DATABASE
-from notebooks.data_constants import NOAA_CSVFILES_URL, GEOJSON_COUNTIES_URL
+from notebooks.data_constants import NOAA_CSVFILES_URL, GEOJSON_COUNTIES_URL, BLS_CPI_CSV
 from notebooks.data_constants import STORM_CATEGORIES
 
 # Redis Constants
@@ -51,11 +51,15 @@ def get_list_years():
     files_dict = get_list_csvfiles(NOAA_CSVFILES_URL)
     return files_dict.keys()
 
+@cache_memoize_conditional
+def get_bls_cpi():
+    return pd.read_csv(BLS_CPI_CSV)
+
 # the dataframes for every year are cached in a globally available
 # Redis memory store which is available across processes
 # and for all time.
 @cache_memoize_conditional
-def get_storm_data(year, cache_id=CACHE_DATAFRAME):
+def get_storm_data(year, inflation, cache_id=CACHE_DATAFRAME):
     conn = psycopg2.connect(
         host=ENDPOINT,
         port=PORT,

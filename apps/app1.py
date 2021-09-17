@@ -45,8 +45,7 @@ layout = html.Div([
             dcc.Checklist(
                 id='inflation',
                 options=[{'label': 'Adjust for inflation', 'value': '1'}],
-                value='1'
-            )
+                value='1')
         ], className='two columns'),
 
         html.Div(dcc.Graph(id='graph-us-map', config={'displayModeBar': False}), className='seven columns'),
@@ -61,7 +60,7 @@ layout = html.Div([
 ])
 
 @cache.memoize()
-def generate_figure(year, layers='all', cache_id=CACHE_FIGURE):
+def generate_figure(year, layers='all', inflation=True, cache_id=CACHE_FIGURE):
     title_event = 'storms'
     df_map, _, _ = get_storm_data(year)
     map_columns = df_map.columns
@@ -107,27 +106,27 @@ def generate_figure(year, layers='all', cache_id=CACHE_FIGURE):
               )
 def compute_value(year, layers, inflation):
     # compute value and send a signal when done
-    print(inflation)
-    _, _, _ = get_storm_data(year)
-    return (year, layers)
+    inflation = inflation=='1'
+    _, _, _ = get_storm_data(year, inflation)
+    return (year, layers, inflation)
 
 @app.callback(Output('graph-us-map', 'figure'),
               Input('signal', 'data'))
 def update_graph_us_map(data):
     # get_storm_data has been fetched in the compute_value callback and 
     # the result is stored in the global redis cached
-    year, layers = data
-    return generate_figure(year, layers=layers)
+    year, layers , inflation = data
+    return generate_figure(year, layers=layers, inflation=inflation)
 
 months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
              'August', 'September', 'October', 'November', 'December']
 @app.callback(Output('vega', 'spec'),
               Input('signal', 'data'))
 def update_graph_(data):
-    year, layers = data
+    year, layers, inflation = data
     # get_storm_data has been fetched in the compute_value callback and 
     # the result is stored in the global redis cached
-    _, df_counties, df_county_details = get_storm_data(year)
+    _, df_counties, df_county_details = get_storm_data(year, inflation)
     titleStr = "All events"
     if layers != 'all':
         df_counties = df_counties[df_counties[layers]==True]
