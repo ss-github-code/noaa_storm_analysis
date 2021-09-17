@@ -72,6 +72,12 @@ def get_storm_data(year, inflation, cache_id=CACHE_DATAFRAME):
         df_counties = pd.read_sql(select, con=conn)
     conn.close()
 
+    df_bls_cpi = get_bls_cpi() # get the inflation cpi for the years 2000-2021
+    df_cpi_2020 = df_bls_cpi[df_bls_cpi['year']==2020] # adjust damage to 2020 dollars
+    df_cpi_2020.reset_index(drop=True, inplace=True) # inflation for month 12 is at iloc 0;
+    df_cpi_year = df_bls_cpi[df_bls_cpi['year']==int(year)]
+    df_cpi_year.reset_index(drop=True, inplace=True)
+
     df_counties['DATA_COL'] = df_counties['DATA_COL'].apply(lambda x : x.split('|'))
     lst_features = ['Population', 
                     'County Business Patterns', '# establishments','Annual payroll($1000)','# employees',
@@ -107,7 +113,12 @@ def get_storm_data(year, inflation, cache_id=CACHE_DATAFRAME):
         else:
             county_dict[county_id][1][row['EVENT_TYPE']].add(eventDateStr)
 
-        county_dict[county_id][2] = county_dict[county_id][2] + row['TOTAL_DAMAGE']
+        damage = row['TOTAL_DAMAGE']
+        mth = row['EVENT_DATE'].month
+        if inflation: # adjust for inflation
+            damage = damage * (df_cpi_2020.iloc[12 - mth]['value']/df_cpi_year.iloc[12 - mth]['value'])
+
+        county_dict[county_id][2] = county_dict[county_id][2] + damage
         for i, c in enumerate(categories):
             if row[c]:
                 county_dict[county_id][i+9] = row[c]
@@ -116,7 +127,7 @@ def get_storm_data(year, inflation, cache_id=CACHE_DATAFRAME):
                     county_dict[county_id][2*i+3][row['EVENT_TYPE']].add(eventDateStr)
                 else:
                     county_dict[county_id][2*i+3][row['EVENT_TYPE']].add(eventDateStr)
-                county_dict[county_id][2*i+4] += row['TOTAL_DAMAGE']
+                county_dict[county_id][2*i+4] += damage
         return row
 
     df_counties.apply(build_map_dict, axis=1)

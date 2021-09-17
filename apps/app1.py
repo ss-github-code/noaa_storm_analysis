@@ -62,7 +62,7 @@ layout = html.Div([
 @cache.memoize()
 def generate_figure(year, layers='all', inflation=True, cache_id=CACHE_FIGURE):
     title_event = 'storms'
-    df_map, _, _ = get_storm_data(year)
+    df_map, _, _ = get_storm_data(year, inflation)
     map_columns = df_map.columns
     if layers != 'all':
         df_map = df_map[df_map[layers]==True]
@@ -106,7 +106,7 @@ def generate_figure(year, layers='all', inflation=True, cache_id=CACHE_FIGURE):
               )
 def compute_value(year, layers, inflation):
     # compute value and send a signal when done
-    inflation = inflation=='1'
+    inflation = len(inflation) > 0
     _, _, _ = get_storm_data(year, inflation)
     return (year, layers, inflation)
 
@@ -124,6 +124,7 @@ months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
               Input('signal', 'data'))
 def update_graph_(data):
     year, layers, inflation = data
+
     # get_storm_data has been fetched in the compute_value callback and 
     # the result is stored in the global redis cached
     _, df_counties, df_county_details = get_storm_data(year, inflation)

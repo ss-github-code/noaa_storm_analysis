@@ -45,11 +45,6 @@ layout = html.Div([
                     id='severity',
                     options=severity_categories, 
                     value='D0'),
-                html.Br(),
-                dcc.Checklist(
-                    id='inflation',
-                    options=[{'label': 'Adjust for inflation', 'value': '1'}],
-                    value='1')                
             ], className='two columns'),
             html.Div([
                 html.Label('Select event:'),
@@ -71,11 +66,9 @@ layout = html.Div([
 @app.callback(Output('event', 'options'),
               Output('event', 'value'),
               Output('signal2', 'data'),              
-              Input('year', 'value'),
-              Input('inflation', 'value'))
-def update_events(year, inflation):
-    inflation = inflation=='1'
-    _, df_counties, _ = get_storm_data(year, inflation)
+              Input('year', 'value'))
+def update_events(year):
+    _, df_counties, _ = get_storm_data(year, True)
     df_counties = df_counties[df_counties['EVENT_TYPE'] == 'Wildfire']
     df_counties.sort_values('TOTAL_DAMAGE', ascending=False, inplace=True)
 
@@ -144,14 +137,12 @@ def generate_figure2(year, severity, index, df_counties, cache_id=CACHE_FIGURE):
 @app.callback(Output('graph-usdm-map', 'figure'), 
               Input('event', 'value'),
               Input('severity', 'value'),
-              Input('inflation', 'value'),
               Input('signal2', 'data'))
-def update_graph_usdm_map(event, severity, inflation, data):
+def update_graph_usdm_map(event, severity, data):
     # get_storm_data has been fetched in the compute_value callback and 
     # the result is stored in the global redis cached
-    inflation = inflation=='1'
     year = data
-    _, df_counties,_ = get_storm_data(year, inflation)
+    _, df_counties,_ = get_storm_data(year, True)
     return generate_figure2(year, severity, event, df_counties)
 
 @app.callback(Output('vega2', 'spec'), 
@@ -162,7 +153,7 @@ def update_county_info(event, data):
     index = event
     dirname = WILDFIRE_DATA_URL + str(year) + '/'
 
-    _, df_counties,_ = get_storm_data(year)
+    _, df_counties,_ = get_storm_data(year, True)
 
     # Get USDM csv file based on the EVENT_DATE
     # USDM csv files are named with a "date".csv where date is always a Tuesday
