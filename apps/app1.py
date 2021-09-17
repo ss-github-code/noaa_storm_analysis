@@ -21,11 +21,12 @@ for k, _ in STORM_CATEGORIES.items():
 layout = html.Div([
     html.Div([
         html.H2('Economic Damage from Natural Disasters in the USA'),
-        html.P('This dashboard presents the damage caused by storms in the USA as reported in the storm events database ' \
+        html.P(['This dashboard presents the damage caused by storms in the USA as reported in the storm events database ' \
                'released by the National Oceanic and Atmospheric Administration (NOAA). We report the independent variables ' \
                'from the affected county like population and economic activity that could be used to predict the total damage ' \
                'caused by the natural disasters in the USA. The dashboard allows you to explore three main types of storms - ' \
-               'tropical storms/cyclones, severe local storms, and wildfires/droughts'),
+               'tropical storms/cyclones, severe local storms, and wildfires/droughts. ', 
+               html.A('Explore wildfires here.', href='/wildfires', target='_blank')]),
         html.Div([
             html.Label('Select year:'),
             dcc.Dropdown(
