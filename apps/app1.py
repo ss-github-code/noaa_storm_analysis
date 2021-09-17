@@ -41,6 +41,12 @@ layout = html.Div([
                 id='layers',
                 options=option_categories, 
                 value='all'),
+            html.Br(),
+            dcc.Checklist(
+                id='inflation',
+                options=[{'label': 'Adjust for inflation', 'value': '1'}],
+                value='1'
+            )
         ], className='two columns'),
 
         html.Div(dcc.Graph(id='graph-us-map', config={'displayModeBar': False}), className='seven columns'),
@@ -96,9 +102,12 @@ def generate_figure(year, layers='all', cache_id=CACHE_FIGURE):
 
 @app.callback(Output('signal', 'data'), 
               Input('year', 'value'),
-              Input('layers', 'value'))
-def compute_value(year, layers):
+              Input('layers', 'value'),
+              Input('inflation', 'value')
+              )
+def compute_value(year, layers, inflation):
     # compute value and send a signal when done
+    print(inflation)
     _, _, _ = get_storm_data(year)
     return (year, layers)
 
