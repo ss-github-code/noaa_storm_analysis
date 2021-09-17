@@ -1,5 +1,7 @@
 # Estimating Damage from Natural Disasters in the USA
-Visualization link: http://noaa-storms-viz.herokuapp.com  
+Links to the dashboards:
+- http://noaa-storms-viz.herokuapp.com
+- http://noaa-storms-viz.herokuapp.com/wildfires
 ## Motivation
 The National Oceanic and Atmospheric Administration (NOAA) in the USA releases the Storm Events Database that records the occurrence of storms and other significant weather phenomena having sufficient intensity to cause damage to property and/or crops. Our primary objective was to explore three major types of storms that cause widespread economic damage in the USA: tropical cyclones and floods (including hurricanes), severe local storms (including tornadoes), and wildfires and droughts. Our project focused on exploring varied independent variables like population, economic activity, and associated weather statistics that affect the total damage caused by these natural disasters in the USA.
 
