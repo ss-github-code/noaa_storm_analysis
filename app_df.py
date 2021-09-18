@@ -116,7 +116,7 @@ def get_storm_data(year, inflation, cache_id=CACHE_DATAFRAME):
         damage = row['TOTAL_DAMAGE']
         mth = row['EVENT_DATE'].month
         if inflation: # adjust for inflation
-            damage = damage * (df_cpi_2020.iloc[12 - mth]['value']/df_cpi_year.iloc[12 - mth]['value'])
+            damage = damage * (df_cpi_2020.iloc[12 - mth]['value']/df_cpi_year[df_cpi_year['period']==mth].iloc[0]['value'])
 
         county_dict[county_id][2] = county_dict[county_id][2] + damage
         for i, c in enumerate(categories):
